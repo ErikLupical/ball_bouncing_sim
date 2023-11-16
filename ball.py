@@ -1,5 +1,6 @@
 import turtle
 import random
+import math
 
 
 class Ball:
@@ -44,6 +45,31 @@ class Ball:
         if abs(self.ypos[i] + self.vy[i]) > (self.canvas_height - self.ball_radius):
             self.vy[i] = -self.vy[i]
 
+        # check for collisions with other balls
+        for j in range(i+1, len(self.xpos)):
+            dx = self.xpos[j] - self.xpos[i]
+            dy = self.ypos[j] - self.ypos[i]
+            distance = math.sqrt(dx**2 + dy**2)
+
+            # if the distance between the centers of the balls is less than or equal to the sum of their radii, they are colliding
+            if distance <= 2*self.ball_radius:
+                angle = math.atan2(dy, dx)
+                magnitude_1 = math.sqrt(self.vx[i]**2 + self.vy[i]**2)
+                magnitude_2 = math.sqrt(self.vx[j]**2 + self.vy[j]**2)
+                direction_1 = math.atan2(self.vy[i], self.vx[i])
+                direction_2 = math.atan2(self.vy[j], self.vx[j])
+                new_vx_1 = magnitude_1 * math.cos(direction_1 - angle)
+                new_vy_1 = magnitude_1 * math.sin(direction_1 - angle)
+                new_vx_2 = magnitude_2 * math.cos(direction_2 - angle)
+                new_vy_2 = magnitude_2 * math.sin(direction_2 - angle)
+                final_vx_1 = ((self.ball_radius - self.ball_radius) * new_vx_1 + (self.ball_radius + self.ball_radius) * new_vx_2) / (self.ball_radius + self.ball_radius)
+                final_vx_2 = ((self.ball_radius + self.ball_radius) * new_vx_1 - (self.ball_radius - self.ball_radius) * new_vx_2) / (self.ball_radius + self.ball_radius)
+                final_vy_1 = new_vy_1
+                final_vy_2 = new_vy_2
+                self.vx[i] = math.cos(angle) * final_vx_1 + math.cos(angle + math.pi/2) * final_vy_1
+                self.vy[i] = math.sin(angle) * final_vx_1 + math.sin(angle + math.pi/2) * final_vy_1
+                self.vx[j] = math.cos(angle) * final_vx_2 + math.cos(angle + math.pi/2) * final_vy_2
+                self.vy[j] = math.sin(angle) * final_vx_2 + math.sin(angle + math.pi/2) * final_vy_2
 
 # def initilizing(xpos, ypos, vx, vy, ball_color, canvas_width, canvas_height, ball_radius, num_balls):
 #     # create random number of balls, num_balls, located at random positions within the canvas;
