@@ -17,8 +17,8 @@ ypos = []
 vx = []
 vy = []
 ball_color = []
-
 ball = Ball(canvas_width, canvas_height, ball_radius, num_balls)
+
 while (True):
     turtle.clear()
     for i in range(num_balls):
